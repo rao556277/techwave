@@ -10,17 +10,23 @@ use Illuminate\Support\Facades\Hash;
 
 class InstructorController extends Controller
 {
+    /**
+     * Display a list of instructors.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         $instructors = Instructor::paginate(10);
-        return view('admin.instructors.index', compact('instructors'));
+        return response()->json($instructors);
     }
 
-    public function create()
-    {
-        return view('admin.instructors.create');
-    }
-
+    /**
+     * Store a newly created instructor in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -40,6 +46,7 @@ class InstructorController extends Controller
             'password' => Hash::make($request->password),
             'role' => "Instructor",
         ]);
+
         $instructor = new Instructor($request->except('password', 'image'));
         $instructor->password = Hash::make($request->password);
         $instructor->user_id = $user->id;
@@ -50,21 +57,28 @@ class InstructorController extends Controller
 
         $instructor->save();
 
-        return redirect()->route('admin.instructors.index')->with('success', 'Instructor created successfully.');
+        return response()->json(['success' => 'Instructor created successfully.', 'instructor' => $instructor], 201);
     }
 
+    /**
+     * Display the specified instructor.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($id)
     {
         $instructor = Instructor::findOrFail($id);
-        return view('admin.instructors.show', compact('instructor'));
+        return response()->json($instructor);
     }
 
-    public function edit($id)
-    {
-        $instructor = Instructor::findOrFail($id);
-        return view('admin.instructors.edit', compact('instructor'));
-    }
-
+    /**
+     * Update the specified instructor.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -94,9 +108,15 @@ class InstructorController extends Controller
 
         $instructor->save();
 
-        return redirect()->route('admin.instructors.index')->with('success', 'Instructor updated successfully.');
+        return response()->json(['success' => 'Instructor updated successfully.', 'instructor' => $instructor]);
     }
 
+    /**
+     * Remove the specified instructor from storage.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($id)
     {
         $instructor = Instructor::findOrFail($id);
@@ -105,16 +125,6 @@ class InstructorController extends Controller
         }
         $instructor->delete();
 
-        return redirect()->route('admin.instructors.index')->with('success', 'Instructor deleted successfully.');
-    }
-
-    protected function createUser(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role' => "Instructor",
-        ]);
+        return response()->json(['success' => 'Instructor deleted successfully.']);
     }
 }

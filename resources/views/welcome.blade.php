@@ -19,7 +19,7 @@
 </head>
 <body class="login">
     <div id="app">
-        <LoginForm></LoginForm>
+        <ResetPassword></ResetPassword>
     </div>
 </body>
 </html>

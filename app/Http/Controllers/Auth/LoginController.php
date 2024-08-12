@@ -18,12 +18,29 @@ class LoginController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json([
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-                'redirect' => '/dashboard',
-                'user' => $user
-            ]);
+            if ($user->role === 'Admin') {
+                return response()->json([
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                    'redirect' => 'AdminDashboard',
+                    'user' => $user
+                ]);
+            } elseif ($user->role === 'Instructor') {
+                return response()->json([
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                    'redirect' => 'instructor.dashboard',
+                    'user' => $user
+                ]);
+            } elseif ($user->role === 'Student') {
+                return response()->json([
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                    'redirect' => 'student.dashboard',
+                    'user' => $user
+                ]);
+            }
+           
         }
 
         throw ValidationException::withMessages([
